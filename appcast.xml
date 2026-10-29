@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?><!-- sparkle-sign-warning:
 IMPORTANT: This file was signed by Sparkle. Any modifications to this file requires re-signing this file with generate_appcast or sign_update! The signed signature will be embedded at the end of this file.
---><rss version="2.0"><channel><title>AutoSubtitle for macOS</title><link>https://github.com/sorapanel7533/autosubtitle-updates/releases</link><description>AutoSubtitleの署名付き更新情報</description></channel></rss><!-- sparkle-signatures:
-edSignature: SX9wmuX2OULNmkpklXRAQ9IPl/vKOpq9w60SoQ26uwVD2517VU0QB4f6u6RkMKFOVgPTwRsrtgzoRA6V0Uu1Cg==
-length: 513
+--><rss xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle" version="2.0"><channel><title>AutoSubtitle for macOS</title><link>https://github.com/sorapanel7533/autosubtitle-updates/releases</link><description>AutoSubtitleの署名付き更新情報</description><language>ja</language><item><title>AutoSubtitle 0.5.0</title><pubDate>Thu, 29 Oct 2026 16:06:23 GMT</pubDate><description>自動更新と関連語の広域収集を追加。出典付き関連語を字幕の確認候補として利用可能にしました。macOS14の字幕エディターの動画表示も修正しました。</description><sparkle:version>500</sparkle:version><sparkle:shortVersionString>0.5.0</sparkle:shortVersionString><sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion><enclosure url="https://github.com/sorapanel7533/autosubtitle-updates/releases/download/v0.5.0/AutoSubtitle-macOS-arm64.dmg" length="700670081" type="application/octet-stream" sparkle:edSignature="b+qrAy+ZiBMjFlAs6ykRnXSbalm82+uh/JDiqH1JHEchvqgLO2RukEs8ql/BzrXtrSYPcukuiUdeDvwd8i/fDg==" sparkle:os="macos"></enclosure></item></channel></rss><!-- sparkle-signatures:
+edSignature: aHetyFJZoNohzixrXURw7XEZfZLIbWpTlyLlr0PZkUnfqVCEDZQ5xYENAEC2vbs8EN9bK1gmLxOIZ1Sbn/RAAw==
+length: 1413
 -->
