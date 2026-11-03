@@ -1,0 +1,56 @@
+name: Package verified normal 0.6.0
+on:
+  push:
+    branches: ['build/normal-0.6.0']
+    paths: ['.github/workflows/build-normal-060.yml', 'distribution/0.6.0/**']
+permissions:
+  contents: read
+jobs:
+  package:
+    if: github.repository == 'sorapanel7533/autosubtitle-updates'
+    runs-on: macos-14
+    timeout-minutes: 30
+    permissions:
+      contents: write
+    env:
+      GH_REPO: sorapanel7533/autosubtitle-updates
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+      - name: Verify destination and obtain pinned archives
+        run: |
+          gh api repos/$GH_REPO/releases/432277259 > "$RUNNER_TEMP/release.json"
+          python -c 'import json,os; r=json.load(open(os.environ["RUNNER_TEMP"]+"/release.json")); assert r["draft"] and r["tag_name"]=="v0.6.0"'
+          curl --fail --location --retry 3 https://github.com/sorapanel7533/autosubtitle-updates/releases/download/v0.5.0/AutoSubtitle-macOS-arm64.dmg --output "$RUNNER_TEMP/base.dmg"
+          echo "d6a9cb6c3e21e9398cb27007d904bc035502ddb8e19e06e8665451eae87585a3  $RUNNER_TEMP/base.dmg" | shasum -a 256 -c -
+          curl --fail --location --retry 3 https://github.com/sparkle-project/Sparkle/releases/download/2.10.1/Sparkle-2.10.1.tar.xz --output "$RUNNER_TEMP/sparkle.tar.xz"
+          echo "1a856d2a9edb8e628de88121d7be04cf0e2167f8641650b78fca00b14244cf27  $RUNNER_TEMP/sparkle.tar.xz" | shasum -a 256 -c -
+          gh api -H 'Accept: application/octet-stream' repos/$GH_REPO/releases/assets/704290407 > "$RUNNER_TEMP/update.delta"
+          echo "e29790873daed82812476adc9404fed65c701fa6e71b0bf525f7b8415261471f  $RUNNER_TEMP/update.delta" | shasum -a 256 -c -
+      - name: Reconstruct exact locally validated application
+        run: |
+          mkdir "$RUNNER_TEMP/sparkle" "$RUNNER_TEMP/base" dist
+          tar -xf "$RUNNER_TEMP/sparkle.tar.xz" -C "$RUNNER_TEMP/sparkle"
+          hdiutil attach -readonly -nobrowse -mountpoint "$RUNNER_TEMP/base" "$RUNNER_TEMP/base.dmg"
+          "$RUNNER_TEMP/sparkle/bin/BinaryDelta" apply "$RUNNER_TEMP/base/AutoSubtitle.app" dist/AutoSubtitle.app "$RUNNER_TEMP/update.delta"
+          codesign --verify --deep --strict dist/AutoSubtitle.app
+          python distribution/0.6.0/tree_digest.py dist/AutoSubtitle.app > APP-TREE.json
+          python -c 'import json; t=json.load(open("APP-TREE.json")); assert t=={"file_count":35500,"sha256":"f046c14f577c909fc4214fad6a7ba1258cc73e59639b64a1112285e79d6936d0"},t'
+          python -c 'import plistlib; i=plistlib.load(open("dist/AutoSubtitle.app/Contents/Info.plist","rb")); assert i["CFBundleIdentifier"]=="jp.autosubtitle.stage3" and i["CFBundleVersion"]=="610" and i["CFBundleShortVersionString"]=="0.6.0" and i["SURequireSignedFeed"] and i["SUVerifyUpdateBeforeExtraction"]'
+          cp distribution/0.6.0/README-ja.txt dist/使い方.txt
+          ln -s /Applications dist/Applications
+          hdiutil create -volname AutoSubtitle-0.6.0 -srcfolder dist -format UDZO AutoSubtitle-0.6.0-arm64.dmg
+          hdiutil verify AutoSubtitle-0.6.0-arm64.dmg
+          shasum -a 256 AutoSubtitle-0.6.0-arm64.dmg > SHA256SUMS.txt
+      - name: Upload full archive to existing draft only
+        run: |
+          gh api --method POST "https://uploads.github.com/repos/$GH_REPO/releases/432277259/assets?name=AutoSubtitle-0.6.0-arm64.dmg" -H 'Content-Type: application/octet-stream' --input AutoSubtitle-0.6.0-arm64.dmg > "$RUNNER_TEMP/upload.json"
+          gh api --method POST "https://uploads.github.com/repos/$GH_REPO/releases/432277259/assets?name=SHA256SUMS.txt" -H 'Content-Type: text/plain' --input SHA256SUMS.txt > /dev/null
+          gh api --method POST "https://uploads.github.com/repos/$GH_REPO/releases/432277259/assets?name=APP-TREE.json" -H 'Content-Type: application/json' --input APP-TREE.json > /dev/null
+          python -c 'import json,os; r=json.load(open(os.environ["RUNNER_TEMP"]+"/upload.json")); assert r["state"]=="uploaded"; print(r["name"],r["size"],r.get("digest"))'
+          echo 'Draft archive only. No appcast, release publication, signing key or user data changed.' >> "$GITHUB_STEP_SUMMARY"
