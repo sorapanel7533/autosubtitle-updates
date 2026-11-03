@@ -1,2 +1,13 @@
-# autosubtitle-updates
-AutoSubtitle for macOS — signed application updates and release downloads
+# AutoSubtitle for macOS
+
+通常版の最新版は **0.6.0（build 610）** です。Apple Silicon、macOS 14以降に対応します。
+
+[最新版のDMGと使い方](https://github.com/sorapanel7533/autosubtitle-updates/releases/latest)
+
+0.5.0では自動確認が有効ならアプリ内に更新が届きます。既定の確認間隔は約4時間です。すぐ確認するには［設定］→［アップデートを確認…］を選んでください。0.6.0以降は起動時にも確認します。
+
+アプリケーションフォルダへインストールし、字幕処理・監視・収集を停止して編集を保存してから更新してください。通常版の辞書・設定・履歴・モデルは引き継ぎます。
+
+DMG・差分更新・更新一覧はEd25519で署名・検証します。Developer ID署名・Apple公証は未実施です。
+
+このリポジトリは配布用です。アプリのソースは非公開で管理しています。
